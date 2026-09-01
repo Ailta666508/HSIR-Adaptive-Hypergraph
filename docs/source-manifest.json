@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source": "复杂网络与人工智能.zip",
+  "note": "Artifacts copied unchanged from the locally supplied course-project archive.",
+  "artifacts": [
+    {
+      "path": "experiments/HSIR.py",
+      "sha256": "f1ed3f2d73c6f097f78f18efa9d7501e7d240b459fd39b6cf853476c8f3ebe93"
+    },
+    {
+      "path": "experiments/S_remain_heatmap.py",
+      "sha256": "d415629ba796bc7ca43023170046239bc70d61e119cfd321feb88bb580412c7c"
+    },
+    {
+      "path": "docs/assets/HSIR.jpg",
+      "sha256": "1720a06714564022cc9d260cf79f65fbd9a816af40158fe07bdaca01af21eb90"
+    },
+    {
+      "path": "docs/assets/S_remain_difference.png",
+      "sha256": "6a0dc27f7496767fa7a8f93d417148e22566e49935d579eb2c5cfecc7517cb68"
+    },
+    {
+      "path": "docs/assets/S_remain_with_deletion.png",
+      "sha256": "ecfca62339a1f1732009d33bc1948fda053a37fc83aa85ea1cdcbce3640423f6"
+    },
+    {
+      "path": "docs/assets/S_remain_without_deletion.png",
+      "sha256": "3b2e95c8c64e017d77d12fd2a4a6c671666f841d1dbf0d84dd61d1fbb17178df"
+    }
+  ]
+}

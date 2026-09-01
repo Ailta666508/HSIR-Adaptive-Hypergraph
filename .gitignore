@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.DS_Store
+
+# Raw datasets are downloaded from their original provider.
+data/*/
+data/*.zip
+!data/README.md
+
+# Locally regenerated results.
+figure/
+
+# Course documents contain student identifiers and are not part of the release.
+*.pdf
+*.ppt
+*.pptx
+*.doc
+*.docx
+*.zip
+

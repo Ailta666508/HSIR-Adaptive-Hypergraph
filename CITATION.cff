@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this course-project code, please cite this repository."
+title: "HSIR: Multi-Risk-Aware Adaptive Link Breaking on Hypergraphs"
+type: software
+authors:
+  - family-names: Han
+    given-names: Feiyang
+  - family-names: Shen
+    given-names: Zihan
+repository-code: "https://github.com/Ailta666508/HSIR-Adaptive-Hypergraph"
+date-released: 2026-09-01
+
