@@ -19,18 +19,18 @@ This repository presents an agent-based **hypergraph SIR (HSIR)** model for stud
 
 ## Model
 
-For a hyperedge \(h\), the perceived risk is
+For a hyperedge $h$, the perceived risk is
 
-\[
-R_h = (1-\alpha)\frac{I_h}{|h|} + \alpha\frac{I}{N},
-\]
+$$
+R_h = (1-\alpha)\frac{I_h}{\lvert h \rvert} + \alpha\frac{I}{N}.
+$$
 
-where \(I_h/|h|\) is the local infected fraction, \(I/N\) is global prevalence, and \(\alpha\) controls their relative weight. At each discrete time step, the implementation evaluates four mechanisms:
+where $I_h/\lvert h \rvert$ is the local infected fraction, $I/N$ is global prevalence, and $\alpha$ controls their relative weight. At each discrete time step, the implementation evaluates four mechanisms:
 
-1. A susceptible node in \(h\) becomes infected with probability \(\beta I_h^\gamma\).
-2. An infected node recovers with probability \(\mu\).
-3. A susceptible node leaves \(h\) with probability \(\delta R_h\).
-4. If \(R_h > \phi\), the hyperedge dissolves with probability \(\eta\).
+1. A susceptible node in $h$ becomes infected with probability $\beta I_h^\gamma$.
+2. An infected node recovers with probability $\mu$.
+3. A susceptible node leaves $h$ with probability $\delta R_h$.
+4. If $R_h > \phi$, the hyperedge dissolves with probability $\eta$.
 
 State and topology changes are then applied synchronously.
 
