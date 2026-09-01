@@ -1,6 +1,6 @@
 # HSIR: Multi-Risk-Aware Adaptive Link Breaking on Hypergraphs
 
-**Outstanding Course Project · Fall Semester, Academic Year 2025–2026**
+**Outstanding Project for the AI for Complex Networks Course**
 
 **Project authors:** Han Feiyang and Zihan Shen  
 **Repository maintainer:** Zihan Shen
