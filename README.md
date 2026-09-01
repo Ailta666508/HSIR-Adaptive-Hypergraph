@@ -7,8 +7,6 @@
 
 This repository presents an agent-based **hypergraph SIR (HSIR)** model for studying how higher-order contagion changes when susceptible individuals react to both local exposure and global prevalence. The model couples disease-state transitions with adaptive changes to hypergraph structure, allowing individual withdrawal from risky groups and probabilistic dissolution of high-risk groups.
 
-> **Release history.** The initial code was developed locally during the Fall Semester of Academic Year 2025–2026 without a commit-by-commit version history. This repository provides a curated release of the original codebase.
-
 ## Highlights
 
 - **Higher-order contagion:** transmission is modeled inside hyperedges, preserving group interactions that a pairwise graph projection would discard.
@@ -145,3 +143,5 @@ The report and presentation PDFs are also excluded because the course copies con
 The underlying course project was completed by **Han Feiyang and Zihan Shen**. **Zihan Shen** curated and maintains this GitHub release. GitHub's contributor list reflects commit authorship for the curated repository and should not be interpreted as sole authorship of the research project.
 
 No open-source license is granted by this repository. Please contact the project authors before reusing the code.
+
+**Note:** This project was initially developed locally. The Git repository was created when the codebase was prepared for publication, so the early development history is unavailable. Subsequent updates are tracked in this repository.
