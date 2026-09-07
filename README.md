@@ -21,23 +21,23 @@
 
 ## Overview
 
-HSIR is an agent-based hypergraph epidemic model in which disease states and group structure evolve together. It retains higher-order group interactions, combines local exposure with global prevalence, and lets susceptible individuals withdraw from risky groups while high-risk hyperedges can dissolve.
+HSIR implements a discrete-time Monte Carlo simulation of SIR dynamics on an adaptive hypergraph. At each step, it computes infection counts and risk values from the current node states and hyperedges, samples node-state and topology events, and then applies the sampled changes. Susceptible nodes can be removed from individual hyperedges, and hyperedges whose risk exceeds a threshold can be cleared.
 
 <p align="center">
   <img src="docs/assets/hsir-concept-overview.png" width="100%" alt="Conceptual overview of local and global risk perception, adaptive hypergraph responses, and SIR dynamics">
 </p>
 
-<p align="center"><em>Conceptual overview of HSIR. Overlapping enclosures denote hyperedges; blue, red, and green nodes denote susceptible, infected, and recovered states.</em></p>
+<p align="center"><em>Repository overview illustration (not a paper figure). Overlapping enclosures denote hyperedges; blue, red, and green nodes denote susceptible, infected, and recovered states.</em></p>
 
-The project studies two questions: how behavioral responses driven by information at different scales reshape higher-order contagion, and where adaptive link breaking provides the largest protection relative to a fixed topology.
+The experiments compare this adaptive topology with a fixed-topology condition over a grid of infection and recovery parameters, then measure the absolute change in the final susceptible fraction.
 
 ### Main ideas
 
-- **Higher-order contagion.** Infection is evaluated inside hyperedges instead of reducing group contacts to pairwise edges.
-- **Multi-scale risk perception.** Each group combines its local infected fraction with the prevalence across the full network.
-- **Two levels of adaptation.** Susceptible nodes may leave risky groups, and sufficiently risky hyperedges may dissolve.
-- **Coupled synchronous dynamics.** Monte Carlo event decisions are computed from the current state, then node states and topology are updated together.
-- **Controlled parameter study.** Adaptive and fixed-topology variants are compared over the same infection and recovery grid.
+- **Hypergraph representation.** Infection trials use the number of infected nodes in each incident hyperedge; the code does not project the data to pairwise edges.
+- **Combined risk signal.** Each hyperedge combines its local infected fraction with the infected fraction across all nodes.
+- **Node-level topology update.** A susceptible node may be removed from each incident hyperedge with a risk-dependent threshold.
+- **Hyperedge-level topology update.** A hyperedge above the risk threshold may be replaced by an empty hyperedge.
+- **Matched comparison.** Adaptive and fixed-topology conditions use the same infection and recovery grid.
 
 ## Model
 
@@ -47,22 +47,30 @@ $$
 R_h = (1-\alpha)\frac{I_h}{\lvert h \rvert} + \alpha\frac{I}{N},
 $$
 
-where $I_h / \lvert h \rvert$ is the infected fraction within the hyperedge, $I/N$ is global prevalence, and $\alpha$ controls their relative weight.
+where $I_h$ is the number of infected nodes in $h$, $\lvert h \rvert$ is the current hyperedge size, $I$ is the total number of infected nodes, $N$ is the number of nodes, and $\alpha$ controls the local-global weighting.
 
 At each discrete time step, the simulator evaluates four mechanisms from the current system state:
 
-1. A susceptible node in $h$ becomes infected with probability $\beta I_h^\gamma$.
-2. An infected node recovers with probability $\mu$.
-3. A susceptible node leaves $h$ with probability $\delta R_h$.
-4. If $R_h > \phi$, the hyperedge dissolves with probability $\eta$.
+1. For every incident hyperedge $h$, a susceptible node receives an infection draw with threshold $\beta I_h^\gamma$.
+2. Each infected node receives one recovery draw with threshold $\mu$.
+3. For every incident hyperedge $h$, a susceptible node receives a withdrawal draw with threshold $\delta R_h$.
+4. If $R_h > \phi$, hyperedge $h$ receives a dissolution draw with threshold $\eta$.
 
-All accepted state and topology changes are applied before the next time step.
+The implementation evaluates these draws from the current state while accumulating changes in copied state and hyperedge structures. It installs those copies before the next time step. A dissolved hyperedge remains in the list as an empty hyperedge; removed memberships are not restored later.
 
 ## Experiments and results
 
 The course study uses the labeled `contact-high-school` network from the [Cornell Higher-Order Network Data collection](https://www.cs.cornell.edu/~arb/data/contact-high-school-labeled/). The dataset contains 327 nodes and 7,818 hyperedges, with a mean hyperedge size of 2.3 and a maximum size of 5.
 
-The parameter study scans a 10 × 10 grid with $\beta \in [0.004, 0.04]$ and $\mu \in [0.02, 0.20]$. Each setting uses 100 Monte Carlo runs and 100 time steps. The adaptive condition uses $\delta=0.1$ and $\eta=0.3$; the fixed-topology baseline sets both values to zero. The evaluation metric is the final susceptible fraction, $S_{\mathrm{remain}}$.
+The initial infected node is the node incident to the largest number of hyperedges. The published scripts use the following settings:
+
+| Experiment | $\beta$ | $\mu$ | $\delta$ | $\eta$ |
+| --- | ---: | ---: | ---: | ---: |
+| Average trajectory | 0.03 | 0.10 | 0.10 | 0.30 |
+| Adaptive grid | 10 values from 0.004 to 0.040 | 10 values from 0.02 to 0.20 | 0.10 | 0.30 |
+| Fixed-topology grid | same grid | same grid | 0 | 0 |
+
+All three settings use $\gamma=1.5$, $\alpha=0.5$, $\phi=0.4$, 100 time steps, and 100 Monte Carlo runs. The grid evaluation metric is the final susceptible fraction, $S_{\mathrm{remain}}$.
 
 The four figures below are the experiment figures used in the course paper and preserved unchanged from the original project archive. They document the reported study rather than a fresh rerun performed for this repository release.
 
@@ -72,7 +80,7 @@ The four figures below are the experiment figures used in the course paper and p
   <img src="docs/assets/HSIR.jpg" width="78%" alt="Average susceptible, infected, and recovered fractions over 100 time steps">
 </p>
 
-<p align="center"><em>Figure 1. Average S/I/R trajectory over 100 independent runs on the contact-high-school hypergraph.</em></p>
+<p align="center"><em>Figure 1. Average S/I/R trajectory over 100 Monte Carlo runs using the trajectory settings above.</em></p>
 
 ### Fixed-topology baseline
 
@@ -98,7 +106,7 @@ The four figures below are the experiment figures used in the course paper and p
 
 <p align="center"><em>Figure 4. Absolute gain in final susceptible fraction: adaptive topology minus fixed topology.</em></p>
 
-The archived grid reports a maximum absolute gain of **0.385** in final susceptible fraction in the low-infection, low-recovery region. The gain declines when transmission becomes too rapid for the adaptive response or when recovery alone already limits spread. These aggregate figures show where the mechanism is effective; they do not establish statistical significance or causal effectiveness in a real population.
+At $\beta=0.004$ and $\mu=0.02$, the archived grids report final susceptible fractions of 0.400 with topology updates and 0.015 without them, an absolute difference of **0.385** (38.5 percentage points). The reported difference becomes smaller across much of the higher-infection or higher-recovery region. These simulation outputs describe the implemented model under the tested settings; they do not establish statistical significance or effectiveness in a real population.
 
 ## Repository structure
 
@@ -162,15 +170,16 @@ python -m pytest -q
 python scripts/verify_release.py
 ```
 
-The release was also smoke-tested on the archived `contact-high-school` data using the default trajectory configuration. [`docs/VALIDATION.md`](docs/VALIDATION.md) records the environment, checks, and validation boundary; [`docs/source-manifest.json`](docs/source-manifest.json) records SHA-256 hashes for the original code and paper figures.
+The release was smoke-tested on the archived `contact-high-school` data using the default trajectory configuration. The full 10 × 10 heatmap sweep was not rerun for the public release; its `run` path was exercised only on a small synthetic hypergraph. [`docs/VALIDATION.md`](docs/VALIDATION.md) records the environment, checks, and validation boundary; [`docs/source-manifest.json`](docs/source-manifest.json) records SHA-256 hashes for the original code and paper figures.
 
 The scripts seed NumPy with `42`, but node identifiers are collected in a Python `set`. Set `PYTHONHASHSEED` before launching Python when process-to-process node ordering must be stable.
 
 ## Limitations
 
-- Link removal is irreversible; reconnection and memory effects are not modeled.
-- Behavioral parameters are exploratory rather than calibrated from longitudinal observations.
-- The global-risk term assumes immediate, accurate access to aggregate prevalence.
+- Link removal is irreversible; the code does not model reconnection.
+- The same $\alpha$, $\phi$, $\delta$, and $\eta$ values are applied across nodes and hyperedges within an experiment.
+- The global-risk term uses the current aggregate infected fraction without information delay or observation noise.
+- The parameters are simulation settings rather than estimates fitted to longitudinal epidemiological data.
 - The stored figures are historical project outputs. Exact reproduction depends on the data, environment, and random-state control documented above.
 
 ## Authorship and repository contribution
